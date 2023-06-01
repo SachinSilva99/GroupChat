@@ -8,20 +8,20 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ChatFormController">
+<AnchorPane prefHeight="701.0" prefWidth="422.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ChatFormController">
    <children>
       <Label layoutX="148.0" layoutY="14.0" text="Chat App" textFill="#8a8a8a">
          <font>
             <Font name="System Bold Italic" size="24.0" />
          </font>
       </Label>
-      <ScrollPane fx:id="spMain" layoutX="1.0" layoutY="63.0" prefHeight="394.0" prefWidth="421.0">
+      <ScrollPane fx:id="spMain" layoutX="1.0" layoutY="63.0" prefHeight="447.0" prefWidth="421.0">
          <content>
             <VBox fx:id="vbox" prefHeight="248.0" prefWidth="412.0" />
          </content>
       </ScrollPane>
-      <JFXTextArea fx:id="txtMsg" layoutX="14.0" layoutY="468.0" prefHeight="28.0" prefWidth="363.0" />
-      <JFXButton layoutX="290.0" layoutY="551.0" onAction="#btnSendOnAction" prefHeight="35.0" prefWidth="87.0" style="-fx-background-color: #659eae;" text="Send" textFill="#282828" />
+      <JFXTextArea fx:id="txtMsg" layoutX="19.0" layoutY="533.0" onKeyPressed="#txtMsgOnKeyPressed" prefHeight="88.0" prefWidth="363.0" />
+      <JFXButton layoutX="290.0" layoutY="632.0" onAction="#btnSendOnAction" prefHeight="35.0" prefWidth="87.0" style="-fx-background-color: #659eae;" text="Send" textFill="#282828" />
       <Label layoutX="83.0" layoutY="14.0" textFill="#308a04" />
       <Label layoutX="14.0" layoutY="14.0" text="Username: ">
          <font>

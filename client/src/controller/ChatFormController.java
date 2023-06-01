@@ -13,6 +13,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -33,9 +35,20 @@ public class ChatFormController {
     private Client client = null;
     @FXML
     public Label lblUsername;
+    private static ChatFormController instance;
+    private double initialTextAreaHeight;
+
+
+    public static ChatFormController getInstance() {
+        return instance;
+    }
+
+    public ChatFormController() {
+        instance = this;
+    }
 
     public void initialize() {
-
+        initialTextAreaHeight = txtMsg.getHeight();
         new Thread(() -> {
 
             String username = UsernameForm.getTitle();
@@ -45,8 +58,8 @@ public class ChatFormController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            assert socket != null;
             client = new Client(socket, username);
+            client.sendMessage(username + " connected");
             client.listenForMessage();
         }).start();
         vbox.heightProperty().addListener(new ChangeListener<Number>() {
@@ -60,6 +73,10 @@ public class ChatFormController {
     public void btnSendOnAction(ActionEvent actionEvent) throws IOException {
         client.sendMessage(txtMsg.getText());
         addLabel(txtMsg.getText(), Pos.BASELINE_RIGHT, "-fx-background-color: #79E0EE;");
+        txtMsg.clear();
+        Platform.runLater(() -> {
+            txtMsg.positionCaret(0);
+        });
     }
 
     public static void addLabel(String message, Pos pos, String color) {
@@ -80,13 +97,12 @@ public class ChatFormController {
         });
     }
 
-    private static ChatFormController instance;
 
-    public static ChatFormController getInstance() {
-        return instance;
-    }
-
-    public ChatFormController() {
-        instance = this;
+    @FXML
+    public void txtMsgOnKeyPressed(KeyEvent keyEvent) throws IOException {
+        if (keyEvent.getCode() == KeyCode.ENTER) {
+            keyEvent.consume();
+            btnSendOnAction(null);
+        }
     }
 }

@@ -3,10 +3,10 @@ package client;
 import controller.ChatFormController;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.image.Image;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
 
 /*
 Author : Sachin Silva

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ChatFormController">
+   <children>
+      <Label layoutX="148.0" layoutY="14.0" text="Chat App" textFill="#8a8a8a">
+         <font>
+            <Font name="System Bold Italic" size="24.0" />
+         </font>
+      </Label>
+      <ScrollPane fx:id="spMain" layoutX="1.0" layoutY="63.0" prefHeight="394.0" prefWidth="421.0">
+         <content>
+            <VBox fx:id="vbox" prefHeight="248.0" prefWidth="412.0" />
+         </content>
+      </ScrollPane>
+      <JFXTextArea fx:id="txtMsg" layoutX="14.0" layoutY="468.0" prefHeight="28.0" prefWidth="363.0" />
+      <JFXButton layoutX="290.0" layoutY="551.0" onAction="#btnSendOnAction" prefHeight="35.0" prefWidth="87.0" style="-fx-background-color: #659eae;" text="Send" textFill="#282828" />
+      <Label layoutX="83.0" layoutY="14.0" textFill="#308a04" />
+      <Label layoutX="14.0" layoutY="14.0" text="Username: ">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblUsername" layoutX="69.0" layoutY="14.0" textFill="#1b9035">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

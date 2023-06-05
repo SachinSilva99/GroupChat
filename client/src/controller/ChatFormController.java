@@ -57,6 +57,7 @@ public class ChatFormController {
                 e.printStackTrace();
             }
             client = new Client(socket, username);
+            lblUsername.setText(username);
             client.sendMessage(username + " connected");
             client.listenForMessage();
         }).start();
@@ -96,11 +97,12 @@ public class ChatFormController {
     }
 
 
-    public static void addLabel(ImageView imageView) {
+    public static void addImage(ImageView imageView, Pos pos) {
         HBox hBox = new HBox();
-        hBox.setAlignment(Pos.BASELINE_LEFT);
+        hBox.setAlignment(pos);
         hBox.setPadding(new Insets(5, 5, 5, 10));
-
+        imageView.setFitWidth(300);
+        imageView.setFitHeight(200);
         TextFlow textFlow = new TextFlow(imageView);
         textFlow.setStyle("-fx-background-color: #DDE6ED;" + "-fx-background-radius: 20px");
         textFlow.setPadding(new Insets(5, 10, 5, 10));
@@ -124,6 +126,12 @@ public class ChatFormController {
     }
 
     public void onImageSelect(MouseEvent mouseEvent) throws IOException {
+
+        addLabel(txtMsg.getText(), Pos.BASELINE_RIGHT, "-fx-background-color: #79E0EE;");
+        txtMsg.clear();
+        Platform.runLater(() -> {
+            txtMsg.positionCaret(0);
+        });
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Image");
         fileChooser.getExtensionFilters().addAll(
@@ -133,25 +141,10 @@ public class ChatFormController {
         File selectedFile = fileChooser.showOpenDialog(null);
         String imagePath = selectedFile.toURI().toString();
         Image image = new Image(imagePath);
-        addLabel(new ImageView(image));
+        addImage(new ImageView(image), Pos.CENTER_RIGHT);
+        client.sendMessage("SENT AN IMAGE BELOW!");
         client.sendImage(selectedFile);
     }
 
-    public static void addImage(ImageView imageView, Pos pos) {
-        HBox hBox = new HBox();
-        hBox.setAlignment(Pos.BASELINE_LEFT);
-        hBox.setPadding(new Insets(5, 5, 5, 10));
 
-        TextFlow textFlow = new TextFlow(imageView);
-        textFlow.setStyle("-fx-background-color: #DDE6ED;" + "-fx-background-radius: 20px");
-        textFlow.setPadding(new Insets(5, 10, 5, 10));
-        hBox.getChildren().add(textFlow);
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                ChatFormController.getInstance().vbox.getChildren().add(hBox);
-            }
-        });
-    }
 }

@@ -1,18 +1,13 @@
 package server;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
-/*
-Author : Sachin Silva
-*/
-
 public class ClientHandler implements Runnable {
-    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
+    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     private DataOutputStream dataOutputStream;
     private Socket socket;
     private String clientUsername;
@@ -26,7 +21,7 @@ public class ClientHandler implements Runnable {
             this.dataInputStream = new DataInputStream(socket.getInputStream());
             this.clientUsername = dataInputStream.readUTF();
             clientHandlers.add(this);
-            broadcastMessage("SEVER : " + clientUsername + " has entered the chat");
+            broadcastMessage("SERVER: " + clientUsername + " has entered the chat");
         } catch (IOException e) {
             closeEverything(socket);
             e.printStackTrace();
@@ -37,8 +32,17 @@ public class ClientHandler implements Runnable {
     public void run() {
         while (socket.isConnected()) {
             try {
-                String messageFromClient = dataInputStream.readUTF();
-                broadcastMessage(messageFromClient);
+                String messageType = dataInputStream.readUTF();
+                if (messageType.equals("IMAGE_DATA")) {
+                    receiveAndBroadcastImage();
+                } else {
+                    int separatorIndex = messageType.indexOf(":");
+                    if (separatorIndex != -1 && separatorIndex < messageType.length() - 1) {
+                        String sender = messageType.substring(0, separatorIndex).trim();
+                        String content = messageType.substring(separatorIndex + 1).trim();
+                        broadcastMessage(sender + ": " + content);
+                    }
+                }
             } catch (IOException e) {
                 closeEverything(socket);
                 removeClientHandler();
@@ -46,7 +50,6 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-
 
     public void broadcastMessage(String messageToSend) {
         for (ClientHandler clientHandler : clientHandlers) {
@@ -62,10 +65,40 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    public void receiveAndBroadcastImage() {
+        try {
+            int imageSize = dataInputStream.readInt();
+            byte[] imageData = new byte[imageSize];
+            int bytesRead = 0;
+            int totalBytesRead = 0;
+            while (totalBytesRead < imageSize && bytesRead != -1) {
+                bytesRead = dataInputStream.read(imageData, totalBytesRead, imageSize - totalBytesRead);
+                if (bytesRead >= 0) {
+                    totalBytesRead += bytesRead;
+                }
+            }
+
+            for (ClientHandler clientHandler : clientHandlers) {
+                if (!clientHandler.clientUsername.equals(clientUsername)) {
+                    clientHandler.dataOutputStream.writeUTF("IMAGE_DATA");
+                    clientHandler.dataOutputStream.writeInt(imageSize);
+                    clientHandler.dataOutputStream.write(imageData);
+                    clientHandler.dataOutputStream.flush();
+                }
+            }
+
+            System.out.println("Image sent successfully");
+        } catch (IOException e) {
+            System.out.println("Error receiving image from client");
+            e.printStackTrace();
+            closeEverything(socket);
+        }
+    }
+
 
     public void removeClientHandler() {
         clientHandlers.remove(this);
-        broadcastMessage("SERVER : " + clientUsername + " has left the chat");
+        broadcastMessage("SERVER: " + clientUsername + " has left the chat");
     }
 
     public void closeEverything(Socket socket) {
@@ -78,4 +111,3 @@ public class ClientHandler implements Runnable {
         }
     }
 }
-

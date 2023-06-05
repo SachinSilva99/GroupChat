@@ -10,14 +10,10 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 
-/*
-Author : Sachin Silva
-*/
 public class Client {
     private DataInputStream dataInputStream;
     private Socket socket;
     private DataOutputStream dataOutputStream;
-
 
     private String username;
 
@@ -27,39 +23,47 @@ public class Client {
             this.dataInputStream = new DataInputStream(socket.getInputStream());
             this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
             this.username = username;
-        } catch (IOException e) {
-            closeEverything(socket);
-        }
-    }
-
-    public void sendMessage(String messageToSend) {
-        String formattedMessage = username + ": " + messageToSend;
-        try {
-            dataOutputStream.writeUTF(formattedMessage);
+            dataOutputStream.writeUTF(username);
             dataOutputStream.flush();
         } catch (IOException e) {
-            System.out.println("Error sending message to server");
+            closeEverything(socket);
             e.printStackTrace();
         }
     }
-
 
     public void listenForMessage() {
         new Thread(() -> {
             while (socket.isConnected()) {
                 try {
-                    String messageFromServer = dataInputStream.readUTF();
-                    if (messageFromServer != null) {
-                        int separatorIndex = messageFromServer.indexOf(":");
-                        if (separatorIndex != -1 && separatorIndex < messageFromServer.length() - 1) {
-                            String sender = messageFromServer.substring(0, separatorIndex).trim();
-                            String content = messageFromServer.substring(separatorIndex + 1).trim();
+                    String messageType = dataInputStream.readUTF();
+                    if (messageType.equals("IMAGE_DATA")) {
+                        int imageSize = dataInputStream.readInt();
+                        byte[] imageData = new byte[imageSize];
+                        int bytesRead = 0;
+                        int totalBytesRead = 0;
+                        while (totalBytesRead < imageSize && bytesRead != -1) {
+                            bytesRead = dataInputStream.read(imageData, totalBytesRead, imageSize - totalBytesRead);
+                            if (bytesRead >= 0) {
+                                totalBytesRead += bytesRead;
+                            }
+                        }
+
+                        Platform.runLater(() -> {
+                            // Handle the image data, e.g., display the image in the chat form
+                            // You can use JavaFX's ImageView to display the image
+                            Image image = new Image(new ByteArrayInputStream(imageData));
+                            ImageView imageView = new ImageView(image);
+                            ChatFormController.addImage(imageView, Pos.CENTER_LEFT);
+                        });
+                    } else {
+                        int separatorIndex = messageType.indexOf(":");
+                        if (separatorIndex != -1 && separatorIndex < messageType.length() - 1) {
+                            String sender = messageType.substring(0, separatorIndex).trim();
+                            String content = messageType.substring(separatorIndex + 1).trim();
                             Platform.runLater(() -> {
                                 ChatFormController.addLabel(sender + ": " + content, Pos.CENTER_LEFT, "-fx-background-color: #DDE6ED;");
                             });
                         }
-                    } else {
-                        break;
                     }
                 } catch (IOException e) {
                     System.out.println("Error receiving message from server");
@@ -71,43 +75,35 @@ public class Client {
     }
 
 
-//    public void sendImage(File file) {
-//        try {
-//            byte[] imageBytes = Files.readAllBytes(file.toPath());
-//
-//            // Send the image size to the server
-//            int imageSize = imageBytes.length;
-//            bufferedWriter.write("IMAGE_SIZE:" + imageSize);
-//            bufferedWriter.newLine();
-//            bufferedWriter.flush();
-//
-//            // Send the image data to the server
-//            bufferedWriter.write("IMAGE_DATA:");
-//            bufferedWriter.flush();
-//
-//            // Determine the chunk size dynamically based on the image size
-//            int maxChunkSize = 1024; // Maximum chunk size you want to use
-//            int chunkSize = Math.min(maxChunkSize, imageSize); // Set the chunk size as imageSize if it is smaller than maxChunkSize
-//
-//            int offset = 0;
-//            while (offset < imageSize) {
-//                int remainingBytes = imageSize - offset;
-//                int bytesToSend = Math.min(remainingBytes, chunkSize);
-//                bufferedWriter.write(new String(imageBytes, offset, bytesToSend));
-//                bufferedWriter.flush();
-//                offset += bytesToSend;
-//            }
-//            System.out.println("Image sent successfully");
-//        } catch (IOException e) {
-//            System.out.println("Error sending image to server");
-//            e.printStackTrace();
-//        }
-//    }
+    public void sendMessage(String message) {
+        try {
+            dataOutputStream.writeUTF(username + ": " + message);
+            dataOutputStream.flush();
+        } catch (IOException e) {
+            System.out.println("Error sending message to server");
+            e.printStackTrace();
+        }
+    }
 
+    public void sendImage(File file) {
+        try {
+            byte[] imageBytes = Files.readAllBytes(file.toPath());
+
+            // Send the image data to the server
+            dataOutputStream.writeUTF("IMAGE_DATA");
+            dataOutputStream.writeInt(imageBytes.length);
+            dataOutputStream.write(imageBytes);
+            dataOutputStream.flush();
+
+            System.out.println("Image sent successfully");
+        } catch (IOException e) {
+            System.out.println("Error sending image to server");
+            e.printStackTrace();
+        }
+    }
 
     public void closeEverything(Socket socket) {
         try {
-
             if (socket != null) {
                 socket.close();
             }

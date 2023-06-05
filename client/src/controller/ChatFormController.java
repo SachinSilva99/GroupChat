@@ -47,7 +47,6 @@ public class ChatFormController {
     }
 
 
-
     public void initialize() {
         new Thread(() -> {
             String username = UsernameForm.getTitle();
@@ -95,7 +94,9 @@ public class ChatFormController {
             }
         });
     }
-    public static void addLabel(ImageView imageView){
+
+
+    public static void addLabel(ImageView imageView) {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.BASELINE_LEFT);
         hBox.setPadding(new Insets(5, 5, 5, 10));
@@ -112,7 +113,6 @@ public class ChatFormController {
             }
         });
     }
-
 
 
     @FXML
@@ -134,6 +134,24 @@ public class ChatFormController {
         String imagePath = selectedFile.toURI().toString();
         Image image = new Image(imagePath);
         addLabel(new ImageView(image));
-        //client.sendImage(selectedFile);
+        client.sendImage(selectedFile);
+    }
+
+    public static void addImage(ImageView imageView, Pos pos) {
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.BASELINE_LEFT);
+        hBox.setPadding(new Insets(5, 5, 5, 10));
+
+        TextFlow textFlow = new TextFlow(imageView);
+        textFlow.setStyle("-fx-background-color: #DDE6ED;" + "-fx-background-radius: 20px");
+        textFlow.setPadding(new Insets(5, 10, 5, 10));
+        hBox.getChildren().add(textFlow);
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                ChatFormController.getInstance().vbox.getChildren().add(hBox);
+            }
+        });
     }
 }

@@ -20,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 
@@ -97,22 +98,33 @@ public class ChatFormController {
     }
 
 
-    public static void addImage(ImageView imageView, Pos pos) {
+    public static void addImage(ImageView imageView, Pos pos, boolean imageSentByOwner) {
         HBox hBox = new HBox();
         hBox.setAlignment(pos);
         hBox.setPadding(new Insets(5, 5, 5, 10));
+
+        Label usernameLabel = new Label(imageSentByOwner ? "" : UsernameForm.getTitle() + ": ");
+        usernameLabel.setStyle("-fx-font-weight: bold;");
+        usernameLabel.setPadding(new Insets(0, 5, 0, 0));
+
+        VBox imageBox = new VBox();
+        imageBox.setAlignment(Pos.CENTER);
+        imageView.setFitHeight(100);
         imageView.setFitWidth(300);
-        imageView.setFitHeight(200);
-        TextFlow textFlow = new TextFlow(imageView);
+        imageBox.getChildren().add(imageView);
+
+        TextFlow textFlow = new TextFlow(usernameLabel, imageBox);
         textFlow.setStyle("-fx-background-color: #DDE6ED;" + "-fx-background-radius: 20px");
         textFlow.setPadding(new Insets(5, 10, 5, 10));
+
+        // Set alignment and vertical alignment for the username label
+        usernameLabel.setTextAlignment(TextAlignment.CENTER);
+        usernameLabel.setAlignment(Pos.TOP_CENTER);
+
         hBox.getChildren().add(textFlow);
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                ChatFormController.getInstance().vbox.getChildren().add(hBox);
-            }
+        Platform.runLater(() -> {
+            ChatFormController.getInstance().vbox.getChildren().add(hBox);
         });
     }
 
@@ -127,11 +139,6 @@ public class ChatFormController {
 
     public void onImageSelect(MouseEvent mouseEvent) throws IOException {
 
-        addLabel(txtMsg.getText(), Pos.BASELINE_RIGHT, "-fx-background-color: #79E0EE;");
-        txtMsg.clear();
-        Platform.runLater(() -> {
-            txtMsg.positionCaret(0);
-        });
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Image");
         fileChooser.getExtensionFilters().addAll(
@@ -141,7 +148,7 @@ public class ChatFormController {
         File selectedFile = fileChooser.showOpenDialog(null);
         String imagePath = selectedFile.toURI().toString();
         Image image = new Image(imagePath);
-        addImage(new ImageView(image), Pos.CENTER_RIGHT);
+        addImage(new ImageView(image), Pos.CENTER_RIGHT, true);
         client.sendMessage("SENT AN IMAGE BELOW!");
         client.sendImage(selectedFile);
     }

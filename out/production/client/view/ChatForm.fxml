@@ -37,7 +37,7 @@
       </Label>
       <ImageView fitHeight="35.0" fitWidth="87.0" layoutX="253.0" layoutY="632.0" onMouseClicked="#onImageSelect" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../Server/src/assets/icons8-image-50.png" />
+            <Image url="@../assets/icons8-image-50.png" />
          </image>
       </ImageView>
    </children>

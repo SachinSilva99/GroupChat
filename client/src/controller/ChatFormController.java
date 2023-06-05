@@ -8,7 +8,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -23,16 +22,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ResourceBundle;
-import java.util.Scanner;
 
 public class ChatFormController {
     public JFXTextArea txtMsg;
@@ -102,6 +95,23 @@ public class ChatFormController {
             }
         });
     }
+    public static void addLabel(ImageView imageView){
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.BASELINE_LEFT);
+        hBox.setPadding(new Insets(5, 5, 5, 10));
+
+        TextFlow textFlow = new TextFlow(imageView);
+        textFlow.setStyle("-fx-background-color: #DDE6ED;" + "-fx-background-radius: 20px");
+        textFlow.setPadding(new Insets(5, 10, 5, 10));
+        hBox.getChildren().add(textFlow);
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                ChatFormController.getInstance().vbox.getChildren().add(hBox);
+            }
+        });
+    }
 
 
 
@@ -121,5 +131,9 @@ public class ChatFormController {
         );
 
         File selectedFile = fileChooser.showOpenDialog(null);
+        String imagePath = selectedFile.toURI().toString();
+        Image image = new Image(imagePath);
+        addLabel(new ImageView(image));
+        //client.sendImage(selectedFile);
     }
 }

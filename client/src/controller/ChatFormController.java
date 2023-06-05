@@ -17,7 +17,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -98,12 +100,13 @@ public class ChatFormController {
     }
 
 
-    public static void addImage(ImageView imageView, Pos pos, boolean imageSentByOwner) {
+    public static void addImage(ImageView imageView, Pos pos, boolean imageSentByOwner, String color) {
         HBox hBox = new HBox();
         hBox.setAlignment(pos);
         hBox.setPadding(new Insets(5, 5, 5, 10));
 
-        Label usernameLabel = new Label(imageSentByOwner ? "" : UsernameForm.getTitle() + ": ");
+        Label usernameLabel = new Label(imageSentByOwner ? "" : UsernameForm.getTitle() + " : ");
+        usernameLabel.setStyle("-fx-fill: Blue");
         usernameLabel.setStyle("-fx-font-weight: bold;");
         usernameLabel.setPadding(new Insets(0, 5, 0, 0));
 
@@ -111,10 +114,10 @@ public class ChatFormController {
         imageBox.setAlignment(Pos.CENTER);
         imageView.setFitHeight(100);
         imageView.setFitWidth(300);
+        imageBox.getChildren().add(usernameLabel);
         imageBox.getChildren().add(imageView);
-
-        TextFlow textFlow = new TextFlow(usernameLabel, imageBox);
-        textFlow.setStyle("-fx-background-color: #DDE6ED;" + "-fx-background-radius: 20px");
+        TextFlow textFlow = new TextFlow( imageBox);
+        textFlow.setStyle(color + "-fx-background-radius: 20px");
         textFlow.setPadding(new Insets(5, 10, 5, 10));
 
         // Set alignment and vertical alignment for the username label
@@ -148,8 +151,7 @@ public class ChatFormController {
         File selectedFile = fileChooser.showOpenDialog(null);
         String imagePath = selectedFile.toURI().toString();
         Image image = new Image(imagePath);
-        addImage(new ImageView(image), Pos.CENTER_RIGHT, true);
-        client.sendMessage("SENT AN IMAGE BELOW!");
+        addImage(new ImageView(image), Pos.CENTER_RIGHT, true,"-fx-background-color: #79E0EE;");
         client.sendImage(selectedFile);
     }
 

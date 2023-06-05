@@ -53,7 +53,7 @@ public class Client {
                             // You can use JavaFX's ImageView to display the image
                             Image image = new Image(new ByteArrayInputStream(imageData));
                             ImageView imageView = new ImageView(image);
-                            ChatFormController.addImage(imageView, Pos.CENTER_LEFT,false);
+                            ChatFormController.addImage(imageView, Pos.CENTER_LEFT,false, "-fx-background-color: #DDE6ED;");
                         });
                     } else {
                         int separatorIndex = messageType.indexOf(":");

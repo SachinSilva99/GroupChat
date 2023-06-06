@@ -26,7 +26,7 @@ public class Client {
             dataOutputStream.writeUTF(username);
             dataOutputStream.flush();
         } catch (IOException e) {
-            closeEverything(socket);
+            closeEverything();
             e.printStackTrace();
         }
     }
@@ -49,8 +49,6 @@ public class Client {
                         }
 
                         Platform.runLater(() -> {
-                            // Handle the image data, e.g., display the image in the chat form
-                            // You can use JavaFX's ImageView to display the image
                             Image image = new Image(new ByteArrayInputStream(imageData));
                             ImageView imageView = new ImageView(image);
                             ChatFormController.addImage(imageView, Pos.CENTER_LEFT,false, "-fx-background-color: #DDE6ED;");
@@ -102,10 +100,16 @@ public class Client {
         }
     }
 
-    public void closeEverything(Socket socket) {
+    public void closeEverything() {
         try {
             if (socket != null) {
                 socket.close();
+            }
+            if (dataInputStream != null) {
+                dataInputStream.close();
+            }
+            if (dataOutputStream != null) {
+                dataOutputStream.close();
             }
         } catch (IOException e) {
             e.printStackTrace();

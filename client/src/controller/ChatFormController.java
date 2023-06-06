@@ -10,6 +10,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -17,14 +19,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class ChatFormController {
     private Client client = null;
     @FXML
     public Label lblUsername;
+
     private static ChatFormController instance;
 
 
@@ -51,6 +53,7 @@ public class ChatFormController {
 
 
     public void initialize() {
+
         new Thread(() -> {
             String username = UsernameForm.getTitle();
             Socket socket = null;
@@ -116,7 +119,7 @@ public class ChatFormController {
         imageView.setFitWidth(300);
         imageBox.getChildren().add(usernameLabel);
         imageBox.getChildren().add(imageView);
-        TextFlow textFlow = new TextFlow( imageBox);
+        TextFlow textFlow = new TextFlow(imageBox);
         textFlow.setStyle(color + "-fx-background-radius: 20px");
         textFlow.setPadding(new Insets(5, 10, 5, 10));
 
@@ -151,8 +154,21 @@ public class ChatFormController {
         File selectedFile = fileChooser.showOpenDialog(null);
         String imagePath = selectedFile.toURI().toString();
         Image image = new Image(imagePath);
-        addImage(new ImageView(image), Pos.CENTER_RIGHT, true,"-fx-background-color: #79E0EE;");
+        addImage(new ImageView(image), Pos.CENTER_RIGHT, true, "-fx-background-color: #79E0EE;");
         client.sendImage(selectedFile);
+    }
+    @FXML
+    public void onClose() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to close the chat?", ButtonType.YES, ButtonType.NO);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+
+        if (alert.getResult() == ButtonType.YES) {
+            Stage stage = (Stage) lblUsername.getScene().getWindow();
+            stage.close();
+            client.closeEverything();
+            System.exit(0);
+        }
     }
 
 

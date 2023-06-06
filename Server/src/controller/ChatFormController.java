@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 import server.Server;
 
 import java.io.IOException;
@@ -21,8 +22,12 @@ public class ChatFormController {
     private Server server = null;
     private boolean serverState = false;
 
-    public void initialize() {
+    private static ChatFormController instance;
+    public ChatFormController() {
+        instance = this;
     }
+
+    public void initialize() {}
 
     @FXML
     public void btnStartStopOnAction() {
@@ -72,13 +77,12 @@ public class ChatFormController {
         });
     }
 
-    private static ChatFormController instance;
+
 
     public static ChatFormController getInstance() {
         return instance;
     }
+    public void setOnCloseRequest(){}
 
-    public ChatFormController() {
-        instance = this;
-    }
+
 }

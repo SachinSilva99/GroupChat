@@ -23,7 +23,7 @@ public class ClientHandler implements Runnable {
             clientHandlers.add(this);
             broadcastMessage("SERVER: " + clientUsername + " has entered the chat");
         } catch (IOException e) {
-            closeEverything(socket);
+            closeEverything(socket, dataOutputStream, dataInputStream);
             e.printStackTrace();
         }
     }
@@ -44,7 +44,7 @@ public class ClientHandler implements Runnable {
                     }
                 }
             } catch (IOException e) {
-                closeEverything(socket);
+                closeEverything(socket, dataOutputStream, dataInputStream);
                 removeClientHandler();
                 break;
             }
@@ -60,7 +60,7 @@ public class ClientHandler implements Runnable {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                closeEverything(socket);
+                closeEverything(socket, dataOutputStream, dataInputStream);
             }
         }
     }
@@ -91,7 +91,7 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             System.out.println("Error receiving image from client");
             e.printStackTrace();
-            closeEverything(socket);
+            closeEverything(socket, dataOutputStream, dataInputStream);
         }
     }
 
@@ -101,13 +101,20 @@ public class ClientHandler implements Runnable {
         broadcastMessage("SERVER: " + clientUsername + " has left the chat");
     }
 
-    public void closeEverything(Socket socket) {
+    public void closeEverything(Socket socket, DataOutputStream dataOutputStream, DataInputStream dataInputStream) {
         try {
             if (socket != null) {
                 socket.close();
+            }
+            if (dataInputStream != null) {
+                dataInputStream.close();
+            }
+            if (dataOutputStream != null) {
+                dataOutputStream.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }

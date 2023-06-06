@@ -23,11 +23,13 @@ public class ChatFormController {
     private boolean serverState = false;
 
     private static ChatFormController instance;
+
     public ChatFormController() {
         instance = this;
     }
 
-    public void initialize() {}
+    public void initialize() {
+    }
 
     @FXML
     public void btnStartStopOnAction() {
@@ -41,36 +43,38 @@ public class ChatFormController {
     }
 
     private void stopServer() {
+        serverState = false;
+        onClose();
         Platform.runLater(() -> {
-            server.closeServerSocket();
+
             btnStartStop.setText("Start Server");
             lblServer.setText("Server Stopped...");
-            serverState = false;
         });
     }
 
     private void startServer() {
+        System.out.println(serverState);
         if (serverState) {
             stopServer();
             return;
         }
+        serverState = true;
         Platform.runLater(() -> {
             btnStartStop.setText("Stop Server");
             lblServer.setText("Server Running...");
-            serverState = true;
         });
 
         try {
             ServerSocket serverSocket = new ServerSocket(1234);
             server = new Server(serverSocket);
             server.startServer();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static void clientConnectedMsg() {
-        System.out.println("client connected msg method");
         Platform.runLater(() -> {
             String text = ChatFormController.getInstance().lblMsg.getText();
             ChatFormController.getInstance().lblMsg.setText(text + "\nA new Client Joined!");
@@ -78,11 +82,13 @@ public class ChatFormController {
     }
 
 
-
     public static ChatFormController getInstance() {
         return instance;
     }
-    public void setOnCloseRequest(){}
 
 
+    public void onClose() {
+        server.closeServerSocket();
+        server.closeServer();
+    }
 }

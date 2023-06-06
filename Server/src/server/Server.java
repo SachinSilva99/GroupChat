@@ -12,6 +12,8 @@ Author : Sachin Silva
 public class Server {
     private final ServerSocket serverSocket;
 
+
+
     public Server(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
     }
@@ -20,6 +22,7 @@ public class Server {
             while(!serverSocket.isClosed()){
                 Socket socket = serverSocket.accept();
                 ChatFormController.clientConnectedMsg();
+
                 ClientHandler clientHandler = new ClientHandler(socket);
 
                 Thread thread = new Thread(clientHandler);
@@ -35,6 +38,13 @@ public class Server {
                 serverSocket.close();
                 System.out.println("closed");
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void closeServer(){
+        try {
+            serverSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

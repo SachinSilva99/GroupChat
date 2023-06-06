@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.file.Files;
 
 public class Client {
@@ -55,16 +56,22 @@ public class Client {
                         });
                     } else {
                         int separatorIndex = messageType.indexOf(":");
+
                         if (separatorIndex != -1 && separatorIndex < messageType.length() - 1) {
                             String sender = messageType.substring(0, separatorIndex).trim();
                             String content = messageType.substring(separatorIndex + 1).trim();
+
                             Platform.runLater(() -> {
                                 ChatFormController.addLabel(sender + ": " + content, Pos.CENTER_LEFT, "-fx-background-color: #DDE6ED;");
                             });
                         }
                     }
-                } catch (IOException e) {
-                    System.out.println("Error receiving message from server");
+                } catch (SocketException e){
+                    closeEverything();
+                    ChatFormController.alert();
+
+                    break;
+                }catch (IOException e){
                     e.printStackTrace();
                     break;
                 }

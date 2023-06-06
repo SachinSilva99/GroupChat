@@ -6,6 +6,7 @@ import com.jfoenix.controls.JFXTextArea;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -30,8 +31,10 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ChatFormController {
+
     public JFXTextArea txtMsg;
     public VBox vbox;
     public ScrollPane spMain;
@@ -60,7 +63,10 @@ public class ChatFormController {
             try {
                 socket = new Socket("localhost", 1234);
             } catch (IOException e) {
-                e.printStackTrace();
+                Platform.runLater(()->{
+                    new Alert(Alert.AlertType.CONFIRMATION, "Sever not connected ", ButtonType.OK).show();
+                    System.exit(0);
+                });
             }
             client = new Client(socket, username);
             lblUsername.setText(username);
@@ -97,6 +103,7 @@ public class ChatFormController {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+
                 ChatFormController.getInstance().vbox.getChildren().add(hBox);
             }
         });
@@ -157,6 +164,7 @@ public class ChatFormController {
         addImage(new ImageView(image), Pos.CENTER_RIGHT, true, "-fx-background-color: #79E0EE;");
         client.sendImage(selectedFile);
     }
+
     @FXML
     public void onClose() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to close the chat?", ButtonType.YES, ButtonType.NO);
@@ -171,5 +179,23 @@ public class ChatFormController {
         }
     }
 
+    public void close() {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Sever Connection Lost!", ButtonType.OK);
+            alert.setHeaderText(null);
+            alert.showAndWait();
+
+            if (alert.getResult() == ButtonType.OK) {
+                Stage stage = (Stage) lblUsername.getScene().getWindow();
+                stage.close();
+                client.closeEverything();
+                System.exit(0);
+            }
+        });
+    }
+
+    public static void alert() {
+        ChatFormController.getInstance().close();
+    }
 
 }

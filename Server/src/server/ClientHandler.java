@@ -14,6 +14,7 @@ public class ClientHandler implements Runnable {
     private DataInputStream dataInputStream;
 
 
+
     public ClientHandler(Socket socket) {
         try {
             this.socket = socket;
@@ -21,7 +22,7 @@ public class ClientHandler implements Runnable {
             this.dataInputStream = new DataInputStream(socket.getInputStream());
             this.clientUsername = dataInputStream.readUTF();
             clientHandlers.add(this);
-            broadcastMessage("SERVER: " + clientUsername + " has entered the chat");
+            // broadcastMessage("SERVER: " + clientUsername + " has entered the chat");
         } catch (IOException e) {
             closeEverything(socket, dataOutputStream, dataInputStream);
             e.printStackTrace();
@@ -52,6 +53,7 @@ public class ClientHandler implements Runnable {
     }
 
     public void broadcastMessage(String messageToSend) {
+
         for (ClientHandler clientHandler : clientHandlers) {
             try {
                 if (!clientHandler.clientUsername.equals(clientUsername)) {

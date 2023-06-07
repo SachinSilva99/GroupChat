@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -23,7 +25,10 @@ public class UsernameForm {
     @FXML
     public void btnEnterGroupChatOnAction(ActionEvent actionEvent) throws IOException {
         username = txtUsername.getText();
-
+        if (username.isEmpty()){
+            new Alert(Alert.AlertType.ERROR, "Username cannot be empty").show();
+            return;
+        }
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ChatForm.fxml"));
         Parent root = loader.load();

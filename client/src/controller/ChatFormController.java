@@ -80,6 +80,9 @@ public class ChatFormController {
     }
 
     public void btnSendOnAction(ActionEvent actionEvent) throws IOException {
+        if(txtMsg.getText().isEmpty()){
+            new Alert(Alert.AlertType.ERROR, "Message cannot be empty").show();
+        }
         client.sendMessage(txtMsg.getText());
         addLabel(txtMsg.getText(), Pos.BASELINE_RIGHT, "-fx-background-color: #79E0EE;");
         txtMsg.clear();

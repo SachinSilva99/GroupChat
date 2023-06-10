@@ -38,6 +38,7 @@ public class Client {
                 try {
                     String messageType = dataInputStream.readUTF();
                     if (messageType.equals("IMAGE_DATA")) {
+                        String username = dataInputStream.readUTF();
                         int imageSize = dataInputStream.readInt();
                         byte[] imageData = new byte[imageSize];
                         int bytesRead = 0;
@@ -52,7 +53,7 @@ public class Client {
                         Platform.runLater(() -> {
                             Image image = new Image(new ByteArrayInputStream(imageData));
                             ImageView imageView = new ImageView(image);
-                            ChatFormController.addImage(imageView, Pos.CENTER_LEFT,false, "-fx-background-color: #DDE6ED;");
+                            ChatFormController.addImage(username,imageView, Pos.CENTER_LEFT,false, "-fx-background-color: #DDE6ED;");
                         });
                     } else {
                         int separatorIndex = messageType.indexOf(":");
@@ -96,6 +97,7 @@ public class Client {
 
             // Send the image data to the server
             dataOutputStream.writeUTF("IMAGE_DATA");
+            dataOutputStream.writeUTF(username);
             dataOutputStream.writeInt(imageBytes.length);
             dataOutputStream.write(imageBytes);
             dataOutputStream.flush();

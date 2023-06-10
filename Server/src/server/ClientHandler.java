@@ -69,6 +69,7 @@ public class ClientHandler implements Runnable {
 
     public void receiveAndBroadcastImage() {
         try {
+            String username = dataInputStream.readUTF();
             int imageSize = dataInputStream.readInt();
             byte[] imageData = new byte[imageSize];
             int bytesRead = 0;
@@ -83,6 +84,7 @@ public class ClientHandler implements Runnable {
             for (ClientHandler clientHandler : clientHandlers) {
                 if (!clientHandler.clientUsername.equals(clientUsername)) {
                     clientHandler.dataOutputStream.writeUTF("IMAGE_DATA");
+                    clientHandler.dataOutputStream.writeUTF(username);
                     clientHandler.dataOutputStream.writeInt(imageSize);
                     clientHandler.dataOutputStream.write(imageData);
                     clientHandler.dataOutputStream.flush();

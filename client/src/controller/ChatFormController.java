@@ -50,6 +50,8 @@ public class ChatFormController {
 
     public ChatFormController() {
         instance = this;
+        System.setProperty("file.encoding", "UTF-8");
+
     }
 
 
@@ -111,12 +113,12 @@ public class ChatFormController {
     }
 
 
-    public static void addImage(ImageView imageView, Pos pos, boolean imageSentByOwner, String color) {
+    public static void addImage(String username ,ImageView imageView, Pos pos, boolean imageSentByOwner, String color) {
         HBox hBox = new HBox();
         hBox.setAlignment(pos);
         hBox.setPadding(new Insets(5, 5, 5, 10));
 
-        Label usernameLabel = new Label(imageSentByOwner ? "" : UsernameForm.getTitle() + " : ");
+        Label usernameLabel = new Label(imageSentByOwner ? "" : username + " : ");
         usernameLabel.setStyle("-fx-fill: Blue");
         usernameLabel.setStyle("-fx-font-weight: bold;");
         usernameLabel.setPadding(new Insets(0, 5, 0, 0));
@@ -162,7 +164,7 @@ public class ChatFormController {
         File selectedFile = fileChooser.showOpenDialog(null);
         String imagePath = selectedFile.toURI().toString();
         Image image = new Image(imagePath);
-        addImage(new ImageView(image), Pos.CENTER_RIGHT, true, "-fx-background-color: #79E0EE;");
+        addImage("",new ImageView(image), Pos.CENTER_RIGHT, true, "-fx-background-color: #79E0EE;");
         client.sendImage(selectedFile);
     }
 
